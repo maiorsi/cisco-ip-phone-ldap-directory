@@ -1,3 +1,7 @@
+// <copyright file="Program.cs" owner="maiorsi">
+// Licenced under the MIT Licence.
+// </copyright>
+
 using System.Xml;
 
 using CiscoIpPhoneLdapDirectory.Settings;
@@ -13,7 +17,7 @@ using Serilog;
 using var log = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
-    
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure
@@ -23,7 +27,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add(new ProducesAttribute("text/xml"));
-    options.OutputFormatters.Add(new XmlSerializerOutputFormatter(new XmlWriterSettings {
+    options.OutputFormatters.Add(new XmlSerializerOutputFormatter(new XmlWriterSettings
+    {
         OmitXmlDeclaration = false
     }));
 });
@@ -37,11 +42,11 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1.0", new OpenApiInfo
     {
-       Title = "Cisco IP Phone LDAP Directory API",
-       Description = "XML API",
-       Contact = new OpenApiContact { Name = "maiorsi", Email = "36492124+maiorsi@users.noreply.github.com"},
-       License = new OpenApiLicense { Name = "MIT", Url = new Uri("https://choosealicence.com/licences/mit/")},
-       Version = "v1.0.0"
+        Title = "Cisco IP Phone LDAP Directory API",
+        Description = "XML API",
+        Contact = new OpenApiContact { Name = "maiorsi", Email = "36492124+maiorsi@users.noreply.github.com" },
+        License = new OpenApiLicense { Name = "MIT", Url = new Uri("https://choosealicence.com/licences/mit/") },
+        Version = "v1.0.0"
     });
 });
 

@@ -1,3 +1,7 @@
+// <copyright file="LdapSettings.cs" owner="maiorsi">
+// Licenced under the MIT Licence.
+// </copyright>
+
 namespace CiscoIpPhoneLdapDirectory.Settings;
 
 public class LdapSettings
