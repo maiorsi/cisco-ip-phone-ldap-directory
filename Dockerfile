@@ -6,7 +6,7 @@ ARG NUGET_TOKEN
 
 # Copy everything
 COPY . ./
-COPY nuget.cfg .
+COPY nuget.config .
 
 # Restore as distinct layers
 RUN dotnet restore --use-lock-file
