@@ -10,6 +10,7 @@ COPY nuget.config .
 
 # Restore as distinct layers
 RUN dotnet restore --use-lock-file
+
 # Build and publish a release
 RUN dotnet publish --no-restore -c Release -o out
 
