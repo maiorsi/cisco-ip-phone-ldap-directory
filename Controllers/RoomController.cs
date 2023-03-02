@@ -12,6 +12,9 @@ using Microsoft.Extensions.Options;
 
 namespace CiscoIpPhoneLdapDirectory.Controllers;
 
+/// <summary>
+/// Controller for /room api endpoints.
+/// </summary>
 [ApiController]
 [Route("[controller]/[action]")]
 public class RoomController : BaseController
@@ -20,6 +23,13 @@ public class RoomController : BaseController
     private readonly LdapSettings _ldapSettings;
     private readonly IDirectoryService _directoryService;
 
+    /// <summary>
+    /// Standard constructor.
+    /// </summary>
+    /// <param name="logger">Logger</param>
+    /// <param name="ldapSettings">LDAP Settings</param>
+    /// <param name="directoryService">DI - Directory Service</param>
+    /// <exception cref="ArgumentNullException">Exception thrown if any argument is null</exception>
     public RoomController(ILogger<RoomController> logger, IOptions<LdapSettings> ldapSettings, IDirectoryService directoryService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -27,6 +37,10 @@ public class RoomController : BaseController
         _directoryService = directoryService ?? throw new ArgumentNullException(nameof(directoryService));
     }
 
+    /// <summary>
+    /// Return the XML for the start search screen.
+    /// </summary>
+    /// <returns>CiscoIpPhoneInput</returns>
     [HttpGet]
     [ProducesResponseType(typeof(CiscoIpPhoneInput), StatusCodes.Status200OK)]
     public CiscoIpPhoneInput Get()
@@ -70,6 +84,13 @@ public class RoomController : BaseController
         };
     }
 
+    /// <summary>
+    /// List (search) for room objects.
+    /// </summary>
+    /// <param name="n">Room query</param>
+    /// <param name="page">Page number</param>
+    /// <param name="searchparam">Search Parameter</param>
+    /// <returns></returns>
     [HttpGet("list")]
     [ProducesResponseType(typeof(CiscoIpPhoneDirectory), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(CiscoIpPhoneError), StatusCodes.Status500InternalServerError)]

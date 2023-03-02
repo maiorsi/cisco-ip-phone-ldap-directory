@@ -12,6 +12,9 @@ using Microsoft.Extensions.Options;
 
 namespace CiscoIpPhoneLdapDirectory.Controllers;
 
+/// <summary>
+/// Controller for /staff api endpoints.
+/// </summary>
 [ApiController]
 [Route("[controller]/[action]")]
 public class StaffController : BaseController
@@ -20,6 +23,13 @@ public class StaffController : BaseController
     private readonly LdapSettings _ldapSettings;
     private readonly IDirectoryService _directoryService;
 
+    /// <summary>
+    /// Standard constructor.
+    /// </summary>
+    /// <param name="logger">Logger</param>
+    /// <param name="ldapSettings">LDAP Settings</param>
+    /// <param name="directoryService">DI - Directory Service</param>
+    /// <exception cref="ArgumentNullException">Exception thrown if any argument is null</exception>
     public StaffController(ILogger<StaffController> logger, IOptions<LdapSettings> ldapSettings, IDirectoryService directoryService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -27,6 +37,10 @@ public class StaffController : BaseController
         _directoryService = directoryService ?? throw new ArgumentNullException(nameof(directoryService));
     }
 
+    /// <summary>
+    /// Return the XML for the start search screen.
+    /// </summary>
+    /// <returns>CiscoIpPhoneInput</returns>
     [HttpGet]
     [ProducesResponseType(typeof(CiscoIpPhoneInput), StatusCodes.Status200OK)]
     public CiscoIpPhoneInput Get()
@@ -91,6 +105,16 @@ public class StaffController : BaseController
         };
     }
 
+    /// <summary>
+    /// List (search) for room objects.
+    /// </summary>
+    /// <param name="f">First name query</param>
+    /// <param name="l">Last name query</param>
+    /// <param name="tl">Title query</param>
+    /// <param name="t">Telephony number query</param>
+    /// <param name="page">Page Number</param>
+    /// <param name="searchparam">Search Parameter</param>
+    /// <returns></returns>
     [HttpGet("list")]
     [ProducesResponseType(typeof(CiscoIpPhoneDirectory), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(CiscoIpPhoneError), StatusCodes.Status500InternalServerError)]
@@ -124,7 +148,7 @@ public class StaffController : BaseController
             {
                 directoryEntries.Enqueue(new DirectoryEntry
                 {
-                    Name = $"{result.FirstName} {result.LastName?.Substring(0,1)}",
+                    Name = $"{result.FirstName} {result.LastName?.Substring(0, 1)}",
                     Telephone = result.Phone
                 });
             }
