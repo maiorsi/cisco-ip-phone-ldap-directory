@@ -40,7 +40,7 @@ builder.Services.Configure<LdapSettings>(builder.Configuration.GetSection("Setti
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1.0", new OpenApiInfo
+    options.SwaggerDoc("v1.0.0", new OpenApiInfo
     {
         Title = "Cisco IP Phone LDAP Directory API",
         Description = "XML API",
@@ -48,6 +48,8 @@ builder.Services.AddSwaggerGen(options =>
         License = new OpenApiLicense { Name = "MIT", Url = new Uri("https://choosealicence.com/licences/mit/") },
         Version = "v1.0.0"
     });
+
+    options.IncludeXmlComments("CiscoIpPhoneLdapDirectory.xml");
 });
 
 var app = builder.Build();
@@ -56,7 +58,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1.0.0/swagger.json", "v1.0.0");
+        options.RoutePrefix = string.Empty;
+    });
 }
 
 app.UseHttpsRedirection();

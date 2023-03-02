@@ -1,4 +1,4 @@
-// <copyright file="RoomController.cs" owner="maiorsi">
+// <copyright file="StaffController.cs" owner="maiorsi">
 // Licenced under the MIT Licence.
 // </copyright>
 
@@ -14,13 +14,13 @@ namespace CiscoIpPhoneLdapDirectory.Controllers;
 
 [ApiController]
 [Route("[controller]/[action]")]
-public class RoomController : BaseController
+public class StaffController : BaseController
 {
-    private readonly ILogger<RoomController> _logger;
+    private readonly ILogger<StaffController> _logger;
     private readonly LdapSettings _ldapSettings;
     private readonly IDirectoryService _directoryService;
 
-    public RoomController(ILogger<RoomController> logger, IOptions<LdapSettings> ldapSettings, IDirectoryService directoryService)
+    public StaffController(ILogger<StaffController> logger, IOptions<LdapSettings> ldapSettings, IDirectoryService directoryService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _ldapSettings = ldapSettings.Value ?? throw new ArgumentNullException(nameof(ldapSettings));
@@ -33,15 +33,36 @@ public class RoomController : BaseController
     {
         return new CiscoIpPhoneInput
         {
-            Title = "Room Directory",
+            Title = "Staff Directory",
             Prompt = "Enter search parameters...",
-            URL = Url.ActionLink("list", "room"),
+            URL = Url.ActionLink("list", "staff"),
             InputItem = new InputItem[]
             {
                 new InputItem
                 {
-                    DisplayName = "Name",
-                    QueryStringParam = "n",
+                    DisplayName = "First Name",
+                    QueryStringParam = "f",
+                    InputFlags = INPUT_FLAG_PLAIN_ASCII_TEXT,
+                    DefaultValue = string.Empty
+                },
+                new InputItem
+                {
+                    DisplayName = "Last Name",
+                    QueryStringParam = "l",
+                    InputFlags = INPUT_FLAG_PLAIN_ASCII_TEXT,
+                    DefaultValue = string.Empty
+                },
+                new InputItem
+                {
+                    DisplayName = "Title",
+                    QueryStringParam = "tl",
+                    InputFlags = INPUT_FLAG_PLAIN_ASCII_TEXT,
+                    DefaultValue = string.Empty
+                },
+                new InputItem
+                {
+                    DisplayName = "Telephone Number",
+                    QueryStringParam = "t",
                     InputFlags = INPUT_FLAG_PLAIN_ASCII_TEXT,
                     DefaultValue = string.Empty
                 }
@@ -73,7 +94,7 @@ public class RoomController : BaseController
     [HttpGet("list")]
     [ProducesResponseType(typeof(CiscoIpPhoneDirectory), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(CiscoIpPhoneError), StatusCodes.Status500InternalServerError)]
-    public CiscoIpPhoneObject List([FromQuery] string n = "", [FromQuery] int page = 1, [FromQuery] string searchparam = "")
+    public CiscoIpPhoneObject List([FromQuery] string f = "", [FromQuery] string l = "", [FromQuery] string tl = "", [FromQuery] string t = "", [FromQuery] int page = 1, [FromQuery] string searchparam = "")
     {
         try
         {
@@ -86,8 +107,8 @@ public class RoomController : BaseController
 
             var directory = new CiscoIpPhoneDirectory
             {
-                Title = "Room Search Results",
-                Prompt = "Select a Room..."
+                Title = "Staff Search Results",
+                Prompt = "Select a Staff Member..."
             };
 
             if (!string.IsNullOrEmpty(searchparam))
@@ -95,7 +116,7 @@ public class RoomController : BaseController
                 directory.Title = $"{searchparam} Search";
             }
 
-            var ldapQuery = string.Format(_ldapSettings.RoomLdapQueryFormat!, n).Replace("**", "*");
+            var ldapQuery = string.Format(_ldapSettings.StaffLdapQueryFormat!, f, l, tl, t).Replace("**", "*");
 
             var results = _directoryService.SearchUsersByLdapQuery(ldapQuery, page, _ldapSettings.PageSize, _ldapSettings.RoomLdapQueryBase).OrderBy(_ => _.Username);
 
@@ -103,7 +124,7 @@ public class RoomController : BaseController
             {
                 directoryEntries.Enqueue(new DirectoryEntry
                 {
-                    Name = result.DisplayName,
+                    Name = $"{result.FirstName} {result.LastName?.Substring(0,1)}",
                     Telephone = result.Phone
                 });
             }
@@ -119,7 +140,7 @@ public class RoomController : BaseController
             {
                 if (((page + 1) * _ldapSettings.PageSize) < _ldapSettings.Limit && results.Count() == _ldapSettings.PageSize)
                 {
-                    Response.Headers.Add("Refresh", $"0;url={Url.ActionLink("list", "room")}?page={page + 1}&n={n}&searchparam={searchparam}");
+                    Response.Headers.Add("Refresh", $"0;url={Url.ActionLink("list", "staff")}?page={page + 1}&f={f}&l={l}&tl={tl}&t={t}&searchparam={searchparam}");
 
                     softKeyItems.Enqueue(new SoftKeyItem
                     {
@@ -138,7 +159,7 @@ public class RoomController : BaseController
                 softKeyItems.Enqueue(new SoftKeyItem
                 {
                     Name = "Prev",
-                    URL = $"{Url.ActionLink("list", "room")}?page={page - 1}&n={n}&searchparam={searchparam}",
+                    URL = $"{Url.ActionLink("list", "staff")}?page={page - 1}&f={f}&l={l}&tl={tl}&t={t}&searchparam={searchparam}",
                     Position = prevButtonIndex
                 });
             }
