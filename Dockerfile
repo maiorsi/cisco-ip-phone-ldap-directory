@@ -1,8 +1,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 WORKDIR /App
 
+ARG NUGET_USER
+ARG NUGET_TOKEN
+
 # Copy everything
 COPY . ./
+COPY nuget.cfg .
+
 # Restore as distinct layers
 RUN dotnet restore --use-lock-file
 # Build and publish a release
