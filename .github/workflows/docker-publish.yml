@@ -53,14 +53,11 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
-        env:
-          NUGET_USER: maiorsi
-          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            "NUGET_USER=$NUGET_USER"
-            "NUGET_TOKEN=$NUGET_TOKEN"
+            "NUGET_USER=maiorsi"
+            "NUGET_TOKEN=${{ secrets.NUGET_TOKEN }}"
